@@ -131,7 +131,17 @@ class AuthServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        LumenPassport::routes($this->app);
+        LumenPassport::routes();
+        
+        // or you want to parameter to customize which endpoints will be enabled:
+        LumenPassport::routes(function ($router) {
+            // call just what you need of these functions
+            // all defined in Dusterio\LumenPassport\RouteRegistrar
+            $router->forAccessTokens();
+            $router->forTransientTokens();
+            $router->forClients();
+            $router->forPersonalAccessTokens();
+        });
 
         /* rest of boot */
     }
@@ -242,7 +252,7 @@ class AuthServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        LumenPassport::routes($this->app, ['prefix' => 'v1/oauth']);
+        LumenPassport::routes(null, ['prefix' => 'v1/oauth']);
 
         /* rest of boot */
     }
