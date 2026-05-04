@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Carbon\Carbon;
 use Laravel\Lumen\Application;
 use Laravel\Lumen\Routing\Router;
+use Illuminate\Support\Facades\Route;
 
 class LumenPassport
 {
@@ -64,8 +65,6 @@ class LumenPassport
      */
     public static function routes($callback = null, array $options = [])
     {
-        if ($callback instanceof Application && preg_match('/(5\.[5-8]\..*)|([6789]\..*)|(10\..*)/', $callback->version())) $callback = $callback->router;
-
         $callback = $callback ?: function ($router) {
             $router->all();
         };
@@ -77,9 +76,8 @@ class LumenPassport
 
         $options = array_merge($defaultOptions, $options);
 
-        $callback->group(Arr::except($options, ['namespace']), function ($router) use ($callback, $options) {
-            $routes = new RouteRegistrar($router, $options);
-            $routes->all();
+        Route::group(Arr::except($options, ['namespace']), function ($router) use ($callback, $options) {
+            $callback(new RouteRegistrar($router, $options));
         });
     }
 }
